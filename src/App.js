@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react"
+import NotesList from "./Components/NotesList"
+import Data from "./Components/NotesData"
+import Search from "./Components/Search"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+export default function App(){
+  const [notes, setNotes] = useState(Data)
+  const [searchText, setSearchText] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+  const addNote = (text) =>{
+    const date = new Date();
+    const newNote =  {
+        text: text,
+        date: date.toLocaleDateString(),
+      }
+    setNotes([...notes, newNote]);
+  }
+
+  const deleteNote = (id) =>{
+    const newNotes = notes.filter((note)=> note.id !== id)
+    setNotes(newNotes);
+  }
+
+  const handleToggle = () =>{
+    setDarkMode(prevState => !prevState);
+  }
+
+  return(
+    <div className={darkMode ? 'toggled' : 'untoggled'}>
+      <div className="container">
+        <div className="header-container">
+          <h1>Notes App</h1>
+          <button className="toggle" onClick={handleToggle} >Toggle Theme</button>
+        </div>
+        
+        <Search handleSearch={setSearchText}/>
+        <NotesList Data={
+          notes.filter((note) => note.text.toLowerCase().includes(searchText.toLowerCase()))} 
+          handleClick={addNote} 
+          handleDelete={deleteNote} 
+        />
+      </div>
     </div>
-  );
-}
-
-export default App;
+  )
+}  
